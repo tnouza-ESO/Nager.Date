@@ -42,6 +42,8 @@ namespace Nager.Date
                 { CountryCode.BY, new Lazy<IHolidayProvider>(() => new BelarusHolidayProvider(_orthodoxProvider))},
                 { CountryCode.BZ, new Lazy<IHolidayProvider>(() => new BelizeHolidayProvider(_catholicProvider))},
                 { CountryCode.CA, new Lazy<IHolidayProvider>(() => new CanadaHolidayProvider(_catholicProvider))},
+                { CountryCode.CD, new Lazy<IHolidayProvider>(() => new DemocraticRepublicOfCongoHolidayProvider())},
+                { CountryCode.CG, new Lazy<IHolidayProvider>(() => new RepublicOfCongoHolidayProvider(_catholicProvider))},
                 { CountryCode.CH, new Lazy<IHolidayProvider>(() => new SwitzerlandHolidayProvider(_catholicProvider))},
                 { CountryCode.CL, new Lazy<IHolidayProvider>(() => new ChileHolidayProvider(_catholicProvider))},
                 { CountryCode.CN, new Lazy<IHolidayProvider>(() => new ChinaHolidayProvider())},
@@ -155,7 +157,8 @@ namespace Nager.Date
         /// </remarks>
         public static string? LicenseKey = null;
 
-        private static void CheckLicense(string? licenseKey)
+        private static void CheckLicense(
+            string? licenseKey)
         {
             if (string.IsNullOrEmpty(licenseKey))
             {
@@ -185,7 +188,8 @@ namespace Nager.Date
         /// <param name="countryCode">Country Code (ISO 3166-1 ALPHA-2)</param>
         /// <returns>Holiday provider for given country</returns>
         /// <exception cref="ArgumentException">Thrown when given country code is not recognized valid</exception>
-        public static IHolidayProvider GetHolidayProvider(string countryCode)
+        public static IHolidayProvider GetHolidayProvider(
+            string countryCode)
         {
             if (!CountryCodeHelper.TryParseCountryCode(countryCode, out var parsedCountryCode))
             {
@@ -201,7 +205,8 @@ namespace Nager.Date
         /// </summary>
         /// <param name="countryCode">Country Code (ISO 3166-1 ALPHA-2)</param>
         /// <returns>Holiday provider for given country</returns>
-        public static IHolidayProvider GetHolidayProvider(CountryCode countryCode)
+        public static IHolidayProvider GetHolidayProvider(
+            CountryCode countryCode)
         {
             TryGetHolidayProvider(countryCode, out var holidayProvider);
             return holidayProvider;
@@ -213,7 +218,12 @@ namespace Nager.Date
         /// <param name="countryCode"></param>
         /// <param name="holidayProvider"></param>
         /// <returns></returns>
-        public static bool TryGetHolidayProvider(CountryCode countryCode, out IHolidayProvider holidayProvider)
+        /// <exception cref="LicenseKeyException">
+        /// Thrown when the license key is invalid, expired, or missing.
+        /// </exception>
+        public static bool TryGetHolidayProvider(
+            CountryCode countryCode,
+            out IHolidayProvider holidayProvider)
         {
             if (_licenseCheckStatus == LicenseCheckStatus.NotChecked)
             {
@@ -253,7 +263,9 @@ namespace Nager.Date
         /// <param name="countryCode">Country Code (ISO 3166-1 ALPHA-2)</param>
         /// <returns>Set of holidays for given country and year</returns>
         /// <exception cref="ArgumentException">Thrown when given country code is not recognized valid</exception>
-        public static IEnumerable<Holiday> GetHolidays(int year, string countryCode)
+        public static IEnumerable<Holiday> GetHolidays(
+            int year,
+            string countryCode)
         {
             if (!CountryCodeHelper.TryParseCountryCode(countryCode, out var parsedCountryCode))
             {
@@ -269,7 +281,9 @@ namespace Nager.Date
         /// <param name="year">The year</param>
         /// <param name="countryCode">Country Code (ISO 3166-1 ALPHA-2)</param>
         /// <returns>Set of public holidays for given country and year</returns>
-        public static IEnumerable<Holiday> GetHolidays(int year, CountryCode countryCode)
+        public static IEnumerable<Holiday> GetHolidays(
+            int year,
+            CountryCode countryCode)
         {
             var provider = GetHolidayProvider(countryCode);
             return provider.GetHolidays(year);
@@ -287,7 +301,10 @@ namespace Nager.Date
         /// <param name="countryCode">The country code (ISO 3166-1 ALPHA-2) to retrieve holidays for</param>
         /// <returns>A set of holidays for the specified country and date range</returns>
         /// <exception cref="ArgumentException">Thrown when the provided country code is not recognized as valid</exception>
-        public static IEnumerable<Holiday> GetHolidays(DateTime startDate, DateTime endDate, string countryCode)
+        public static IEnumerable<Holiday> GetHolidays(
+            DateTime startDate,
+            DateTime endDate,
+            string countryCode)
         {
             if (!CountryCodeHelper.TryParseCountryCode(countryCode, out var parsedCountryCode))
             {
@@ -305,7 +322,10 @@ namespace Nager.Date
         /// <param name="countryCode">The country code (ISO 3166-1 ALPHA-2) to retrieve holidays for</param>
         /// <returns>A set of holidays for the specified country and date range</returns>
         /// <exception cref="ArgumentException">Thrown when given end date is before given start date</exception>
-        public static IEnumerable<Holiday> GetHolidays(DateTime startDate, DateTime endDate, CountryCode countryCode)
+        public static IEnumerable<Holiday> GetHolidays(
+            DateTime startDate,
+            DateTime endDate,
+            CountryCode countryCode)
         {
             if (startDate > endDate)
             {
@@ -335,7 +355,9 @@ namespace Nager.Date
         /// <param name="startDate">The start date</param>
         /// <param name="endDate">The end date</param>
         /// <returns>Set of holidays for date range</returns>
-        public static IEnumerable<Holiday> GetHolidays(DateTime startDate, DateTime endDate)
+        public static IEnumerable<Holiday> GetHolidays(
+            DateTime startDate,
+            DateTime endDate)
         {
             var items = new List<Holiday>();
 
@@ -368,7 +390,9 @@ namespace Nager.Date
         /// <param name="countryCode">Country Code (ISO 3166-1 ALPHA-2)</param>
         /// <returns>True if given date is public holiday in given country, false otherwise</returns>
         /// <exception cref="ArgumentException">Thrown when given country code is not recognized valid</exception>
-        public static bool IsPublicHoliday(DateTime date, string countryCode)
+        public static bool IsPublicHoliday(
+            DateTime date,
+            string countryCode)
         {
             if (!CountryCodeHelper.TryParseCountryCode(countryCode, out var parsedCountryCode))
             {
@@ -384,7 +408,9 @@ namespace Nager.Date
         /// <param name="date">The date</param>
         /// <param name="countryCode">Country Code (ISO 3166-1 ALPHA-2)</param>
         /// <returns>True if given date is public holiday in given country, false otherwise</returns>
-        public static bool IsPublicHoliday(DateTime date, CountryCode countryCode)
+        public static bool IsPublicHoliday(
+            DateTime date,
+            CountryCode countryCode)
         {
             var items = GetHolidays(date.Year, countryCode);
             return items.Any(GetHolidayFilter(date, HolidayTypes.Public));
@@ -400,11 +426,14 @@ namespace Nager.Date
         /// True if given date is public holiday in given country, false otherwise.
         /// Set of public holidays for given day is returned in out parameter.
         /// </returns>
-        public static bool IsPublicHoliday(DateTime date, CountryCode countryCode, out Holiday[] publicHolidays)
+        public static bool IsPublicHoliday(
+            DateTime date,
+            CountryCode countryCode,
+            out Holiday[] publicHolidays)
         {
             var items = GetHolidays(date.Year, countryCode);
             publicHolidays = items.Where(GetHolidayFilter(date, HolidayTypes.Public)).ToArray();
-            return publicHolidays.Any();
+            return publicHolidays.Length > 0;
         }
 
         /// <summary>
@@ -415,7 +444,10 @@ namespace Nager.Date
         /// <param name="subdivisionCode">Subdivision code of a country</param>
         /// <returns>True if given date is public holiday in given country and county, false otherwise</returns>
         /// <exception cref="ArgumentException">Thrown when given county code is not recognized valid</exception>
-        public static bool IsPublicHoliday(DateTime date, CountryCode countryCode, string subdivisionCode)
+        public static bool IsPublicHoliday(
+            DateTime date,
+            CountryCode countryCode,
+            string subdivisionCode)
         {
             if (subdivisionCode is null)
             {
